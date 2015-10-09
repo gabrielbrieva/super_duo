@@ -1,2 +1,2 @@
 # super_duo
-Udacity Super Duo Project
+Udacity Super Duo Projects
