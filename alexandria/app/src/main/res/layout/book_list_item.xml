@@ -32,7 +32,7 @@
     <TextView
         android:id="@+id/listBookSubTitle"
         android:layout_width="fill_parent"
-        android:layout_height="26dip"
+        android:layout_height="wrap_content"
         android:singleLine="true"
         android:textSize="12sp"
         android:ellipsize="end"

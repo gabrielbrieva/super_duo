@@ -3,61 +3,78 @@ package it.jaschke.alexandria.api;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.support.v4.widget.CursorAdapter;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import it.jaschke.alexandria.ListOfBooks;
 import it.jaschke.alexandria.R;
-import it.jaschke.alexandria.data.AlexandriaContract;
 import it.jaschke.alexandria.services.DownloadImage;
 
 /**
  * Created by saj on 11/01/15.
+ *
+ * Transformed to RecyclerView.Adapter with Cursor Support by Gabriel
  */
-public class BookListAdapter extends CursorAdapter {
+public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHolder> {
 
+    private Cursor mCursor;
+    private Context mContext;
 
-    public static class ViewHolder {
-        public final ImageView bookCover;
-        public final TextView bookTitle;
-        public final TextView bookSubTitle;
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        public final ImageView mIvCover;
+        public final TextView mTvTitle;
+        public final TextView mTvSubTitle;
 
         public ViewHolder(View view) {
-            bookCover = (ImageView) view.findViewById(R.id.fullBookCover);
-            bookTitle = (TextView) view.findViewById(R.id.listBookTitle);
-            bookSubTitle = (TextView) view.findViewById(R.id.listBookSubTitle);
+            super(view);
+
+            mIvCover = (ImageView) view.findViewById(R.id.fullBookCover);
+            mTvTitle = (TextView) view.findViewById(R.id.listBookTitle);
+            mTvSubTitle = (TextView) view.findViewById(R.id.listBookSubTitle);
         }
     }
 
-    public BookListAdapter(Context context, Cursor c, int flags) {
-        super(context, c, flags);
+    public BookListAdapter(Context context) {
+        this.mContext = context;
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
-
-        ViewHolder viewHolder = (ViewHolder) view.getTag();
-
-        String imgUrl = cursor.getString(cursor.getColumnIndex(AlexandriaContract.BookEntry.IMAGE_URL));
-        new DownloadImage(viewHolder.bookCover).execute(imgUrl);
-
-        String bookTitle = cursor.getString(cursor.getColumnIndex(AlexandriaContract.BookEntry.TITLE));
-        viewHolder.bookTitle.setText(bookTitle);
-
-        String bookSubTitle = cursor.getString(cursor.getColumnIndex(AlexandriaContract.BookEntry.SUBTITLE));
-        viewHolder.bookSubTitle.setText(bookSubTitle);
+    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        if ( viewGroup instanceof RecyclerView ) {
+            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.book_list_item, viewGroup, false);
+            view.setFocusable(true);
+            return new ViewHolder(view);
+        } else {
+            throw new RuntimeException("Not bound to RecyclerViewSelection");
+        }
     }
 
     @Override
-    public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View view = LayoutInflater.from(context).inflate(R.layout.book_list_item, parent, false);
+    public void onBindViewHolder(ViewHolder vh, int position) {
+        mCursor.moveToPosition(position);
 
-        ViewHolder viewHolder = new ViewHolder(view);
-        view.setTag(viewHolder);
+        // TODO: change by picasso library
+        new DownloadImage(vh.mIvCover).execute(mCursor.getString(ListOfBooks.COL_BOOK_COVER));
+        vh.mTvTitle.setText(mCursor.getString(ListOfBooks.COL_BOOK_TITLE));
+        vh.mTvSubTitle.setText(mCursor.getString(ListOfBooks.COL_BOOK_SUBTITLE));
+    }
 
-        return view;
+    @Override
+    public int getItemCount() {
+        if (mCursor == null) return 0;
+        return mCursor.getCount();
+    }
+
+    public void swapCursor(Cursor newCursor) {
+        mCursor = newCursor;
+        notifyDataSetChanged();
+    }
+
+    public Cursor getCursor() {
+        return mCursor;
     }
 }
