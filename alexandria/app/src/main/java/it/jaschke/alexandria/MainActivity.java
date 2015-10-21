@@ -84,12 +84,12 @@ public class MainActivity extends AppCompatActivity implements Callback {
         title = getString(titleId);
     }
 
-    public void restoreActionBar() {
+    /*public void restoreActionBar() {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(title);
-    }
+    }*/
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

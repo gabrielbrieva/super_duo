@@ -23,8 +23,9 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
 
     private Cursor mCursor;
     private Context mContext;
+    private BookListAdapterOnClickHandler mClickHandler;
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final ImageView mIvCover;
         public final TextView mTvTitle;
         public final TextView mTvSubTitle;
@@ -35,11 +36,25 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
             mIvCover = (ImageView) view.findViewById(R.id.fullBookCover);
             mTvTitle = (TextView) view.findViewById(R.id.listBookTitle);
             mTvSubTitle = (TextView) view.findViewById(R.id.listBookSubTitle);
+
+            view.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int adapterPosition = getAdapterPosition();
+            mCursor.moveToPosition(adapterPosition);
+            mClickHandler.onClick(mCursor.getString(ListOfBooks.COL_BOOK_ID), this);
         }
     }
 
-    public BookListAdapter(Context context) {
+    public static interface BookListAdapterOnClickHandler {
+        void onClick(String ean, ViewHolder vh);
+    }
+
+    public BookListAdapter(Context context, BookListAdapterOnClickHandler clickHandler) {
         this.mContext = context;
+        this.mClickHandler = clickHandler;
     }
 
     @Override
