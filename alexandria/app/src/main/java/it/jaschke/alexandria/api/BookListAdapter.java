@@ -10,20 +10,24 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import it.jaschke.alexandria.ListOfBooks;
 import it.jaschke.alexandria.R;
-import it.jaschke.alexandria.services.DownloadImage;
+import it.jaschke.alexandria.picasso.PicassoBigCache;
 
 /**
  * Created by saj on 11/01/15.
  *
  * Transformed to RecyclerView.Adapter with Cursor Support by Gabriel
+ * Use SearchView to filter books list by Gabriel
  */
 public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHolder> {
 
     private Cursor mCursor;
     private Context mContext;
     private BookListAdapterOnClickHandler mClickHandler;
+    private Picasso mPicasso;
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final ImageView mIvCover;
@@ -55,6 +59,8 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
     public BookListAdapter(Context context, BookListAdapterOnClickHandler clickHandler) {
         this.mContext = context;
         this.mClickHandler = clickHandler;
+
+        this.mPicasso = PicassoBigCache.INSTANCE.getPicassoBigCache(mContext);
     }
 
     @Override
@@ -72,8 +78,8 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
     public void onBindViewHolder(ViewHolder vh, int position) {
         mCursor.moveToPosition(position);
 
-        // TODO: change by picasso library
-        new DownloadImage(vh.mIvCover).execute(mCursor.getString(ListOfBooks.COL_BOOK_COVER));
+        mPicasso.load(mCursor.getString(ListOfBooks.COL_BOOK_COVER))
+                .into(vh.mIvCover);
         vh.mTvTitle.setText(mCursor.getString(ListOfBooks.COL_BOOK_TITLE));
         vh.mTvSubTitle.setText(mCursor.getString(ListOfBooks.COL_BOOK_SUBTITLE));
     }

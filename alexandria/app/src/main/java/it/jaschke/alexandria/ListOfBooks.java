@@ -14,6 +14,7 @@ import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -23,7 +24,9 @@ import it.jaschke.alexandria.api.Callback;
 import it.jaschke.alexandria.data.AlexandriaContract;
 
 
-public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, SearchView.OnQueryTextListener {
+
+    private final String SEARCH_KEY = "BOOK_SEARCH_KEY";
 
     private RecyclerView mRvBooks;
     private BookListAdapter mBooksAdapter;
@@ -44,7 +47,6 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
     private static final int BOOKS_LOADER_ID = 10;
 
     private int position = ListView.INVALID_POSITION;
-    //private EditText mEtSearch;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,16 +58,6 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_list_of_books, container, false);
-
-        /*mEtSearch = (EditText) view.findViewById(R.id.searchText);
-        view.findViewById(R.id.searchButton).setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ListOfBooks.this.restartLoader();
-                    }
-                }
-        );*/
 
         mRvBooks = (RecyclerView) view.findViewById(R.id.rv_books);
 
@@ -81,17 +73,6 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
 
         mRvBooks.setAdapter(mBooksAdapter);
 
-        /*mRvBooks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Cursor cursor = bookListAdapter.getCursor();
-                if (cursor != null && cursor.moveToPosition(position)) {
-
-                }
-            }
-        });*/
-
         return view;
     }
 
@@ -100,15 +81,46 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
         inflater.inflate(R.menu.main, menu);
 
         // Get the SearchView and set the searchable configuration
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(getActivity().SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        final SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         // Assumes current activity is the searchable activity
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
         //searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+
+        searchView.setOnQueryTextListener(this);
+        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus && searchView.getQuery().length() == 0) {
+                    searchItem.collapseActionView();
+                }
+            }
+        });
     }
 
-    private void restartLoader() {
-        getLoaderManager().restartLoader(BOOKS_LOADER_ID, null, this);
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        restartLoader(query);
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        restartLoader(query);
+        return true;
+    }
+
+    private void restartLoader(String query) {
+
+        Bundle args = null;
+
+        if (query != null && query.trim().length() > 0) {
+            args = new Bundle();
+            args.putString(SEARCH_KEY, query);
+        }
+
+        getLoaderManager().restartLoader(BOOKS_LOADER_ID, args, this);
     }
 
     @Override
@@ -120,20 +132,23 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
-        /*String searchString = mEtSearch.getText().toString();
+        if (args != null) {
 
-        if (searchString.length() > 0) {
+            String searchString = args.getString(SEARCH_KEY);
 
-            searchString = "%"+searchString+"%";
+            if (searchString != null && searchString.trim().length() > 0) {
 
-            return new CursorLoader(getActivity(),
-                    AlexandriaContract.BookEntry.CONTENT_URI,
-                    BOOKS_COLUMNS,
-                    AlexandriaContract.BookEntry.TITLE +" LIKE ? OR " + AlexandriaContract.BookEntry.SUBTITLE + " LIKE ? ",
-                    new String[]{ searchString, searchString },
-                    null
-            );
-        }*/
+                searchString = "%" + searchString.trim() + "%";
+
+                return new CursorLoader(getActivity(),
+                        AlexandriaContract.BookEntry.CONTENT_URI,
+                        BOOKS_COLUMNS,
+                        AlexandriaContract.BookEntry.TITLE + " LIKE ? OR " + AlexandriaContract.BookEntry.SUBTITLE + " LIKE ? ",
+                        new String[]{searchString, searchString},
+                        null
+                );
+            }
+        }
 
         return new CursorLoader(getActivity(),
                 AlexandriaContract.BookEntry.CONTENT_URI,
