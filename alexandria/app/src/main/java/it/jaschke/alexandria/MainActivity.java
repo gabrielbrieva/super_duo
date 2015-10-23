@@ -17,9 +17,6 @@ import it.jaschke.alexandria.api.Callback;
 
 public class MainActivity extends AppCompatActivity implements Callback {
 
-    /**
-     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
-     */
     private CharSequence title;
     private BroadcastReceiver messageReciever;
     private Toolbar mToolbar;
@@ -38,42 +35,17 @@ public class MainActivity extends AppCompatActivity implements Callback {
 
         messageReciever = new MessageReciever();
         IntentFilter filter = new IntentFilter(MESSAGE_EVENT);
-        LocalBroadcastManager.getInstance(this).registerReceiver(messageReciever,filter);
+        LocalBroadcastManager.getInstance(this).registerReceiver(messageReciever, filter);
 
         title = getTitle();
 
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, new ListOfBooks())
-                //.addToBackStack((String) title)
-                .commit();
-    }
-
-    /*
-    @Override
-    public void onNavigationDrawerItemSelected(int position) {
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment nextFragment;
-
-        switch (position){
-            default:
-            case 0:
-                nextFragment = new ListOfBooks();
-                break;
-            case 1:
-                nextFragment = new AddBook();
-                break;
-            case 2:
-                nextFragment = new About();
-                break;
-
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, new ListOfBooks())
+                    .addToBackStack("List of Books")
+                    .commit();
         }
-
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, nextFragment)
-                .addToBackStack((String) title)
-                .commit();
-    }*/
+    }
 
     public void setTitle(int titleId) {
         title = getString(titleId);

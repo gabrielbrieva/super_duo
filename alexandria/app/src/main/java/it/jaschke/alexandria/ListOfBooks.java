@@ -17,7 +17,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
+
+import com.getbase.floatingactionbutton.FloatingActionButton;
 
 import it.jaschke.alexandria.api.BookListAdapter;
 import it.jaschke.alexandria.api.Callback;
@@ -26,12 +27,20 @@ import it.jaschke.alexandria.data.AlexandriaContract;
 
 public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, SearchView.OnQueryTextListener {
 
+    // Search string on bundle
     private final String SEARCH_KEY = "BOOK_SEARCH_KEY";
+    // last search string value
+    private String mLastQuery = null;
 
+    // Using RecyclerView and custom CursorAdapter
     private RecyclerView mRvBooks;
     private BookListAdapter mBooksAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
+    // SearchView MenuItem used to filter books results
+    private SearchView mSvSearchBook;
+
+    // Columns used by query loader
     private static final String[] BOOKS_COLUMNS = {
             AlexandriaContract.BookEntry._ID,
             AlexandriaContract.BookEntry.TITLE,
@@ -39,19 +48,25 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
             AlexandriaContract.BookEntry.IMAGE_URL
     };
 
+    // Columns indexes used by query loader
     public static final int COL_BOOK_ID = 0;
     public static final int COL_BOOK_TITLE = 1;
     public static final int COL_BOOK_SUBTITLE = 2;
     public static final int COL_BOOK_COVER = 3;
 
+    // Loader Id
     private static final int BOOKS_LOADER_ID = 10;
 
-    private int position = ListView.INVALID_POSITION;
+    //private int position = ListView.INVALID_POSITION;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setHasOptionsMenu(true);
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(SEARCH_KEY))
+            mLastQuery = savedInstanceState.getString(SEARCH_KEY);
     }
 
     @Override
@@ -73,6 +88,30 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
 
         mRvBooks.setAdapter(mBooksAdapter);
 
+        FloatingActionButton fabSearch = (FloatingActionButton) view.findViewById(R.id.fab_search);
+        fabSearch.setIcon(R.drawable.ic_action_communication_dialpad);
+        fabSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, new AddBook())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+
+        FloatingActionButton fabBarcodeScan = (FloatingActionButton) view.findViewById(R.id.fab_barcode);
+        fabBarcodeScan.setIcon(R.drawable.ic_action_barcode);
+        fabBarcodeScan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, new BarcodeScannerFragment())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+
         return view;
     }
 
@@ -83,16 +122,22 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
         // Get the SearchView and set the searchable configuration
         final MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(getActivity().SEARCH_SERVICE);
-        final SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        mSvSearchBook = (SearchView) menu.findItem(R.id.action_search).getActionView();
+
         // Assumes current activity is the searchable activity
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+        mSvSearchBook.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
         //searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
 
-        searchView.setOnQueryTextListener(this);
-        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+        if (mLastQuery != null && mLastQuery.length() > 0) {
+            searchItem.expandActionView();
+            mSvSearchBook.setQuery(mLastQuery, false);
+        }
+
+        mSvSearchBook.setOnQueryTextListener(this);
+        mSvSearchBook.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus && searchView.getQuery().length() == 0) {
+                if (!hasFocus && mSvSearchBook.getQuery().length() == 0) {
                     searchItem.collapseActionView();
                 }
             }
@@ -112,21 +157,30 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
     }
 
     private void restartLoader(String query) {
+        getLoaderManager().restartLoader(BOOKS_LOADER_ID, createQueryBundle(query), this);
+    }
 
-        Bundle args = null;
+    private Bundle createQueryBundle(String query) {
+        Bundle bundle = new Bundle();
 
-        if (query != null && query.trim().length() > 0) {
-            args = new Bundle();
-            args.putString(SEARCH_KEY, query);
-        }
+        if (query != null && query.trim().length() > 0)
+            bundle.putString(SEARCH_KEY, query);
 
-        getLoaderManager().restartLoader(BOOKS_LOADER_ID, args, this);
+        return bundle;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(BOOKS_LOADER_ID, null, this);
+        getLoaderManager().initLoader(BOOKS_LOADER_ID, createQueryBundle(mLastQuery), this);
         super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (mSvSearchBook != null && mSvSearchBook.getQuery() != null && mSvSearchBook.getQuery().length() > 0)
+            outState.putString(SEARCH_KEY, mSvSearchBook.getQuery().toString());
     }
 
     @Override
@@ -163,9 +217,9 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mBooksAdapter.swapCursor(data);
 
-        if (position != ListView.INVALID_POSITION) {
+        /*if (position != ListView.INVALID_POSITION) {
             mRvBooks.smoothScrollToPosition(position);
-        }
+        }*/
     }
 
     @Override
