@@ -5,21 +5,30 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.PersistableBundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import it.jaschke.alexandria.api.Callback;
+import it.jaschke.alexandria.ui.FragmentKeys;
+import it.jaschke.alexandria.ui.FragmentOrchestrator;
 
 
-public class MainActivity extends AppCompatActivity implements Callback {
+public class MainActivity extends AppCompatActivity implements Callback, FragmentOrchestrator, FragmentManager.OnBackStackChangedListener {
 
     private CharSequence title;
     private BroadcastReceiver messageReciever;
     private Toolbar mToolbar;
+
+    private final String BACKTAG_KEY = "BACKTAG_KEY";
+    private String mBackTag = null;
 
     public static final String MESSAGE_EVENT = "MESSAGE_EVENT";
     public static final String MESSAGE_KEY = "MESSAGE_EXTRA";
@@ -40,29 +49,84 @@ public class MainActivity extends AppCompatActivity implements Callback {
         title = getTitle();
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, new ListOfBooks())
-                    .addToBackStack("List of Books")
-                    .commit();
+            mBackTag = savedInstanceState.getString(BACKTAG_KEY);
+            loadFragment(FragmentKeys.BOOKS);
         }
+
+        getSupportFragmentManager().addOnBackStackChangedListener(this);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+
+        outState.putString(BACKTAG_KEY, mBackTag);
+
+        super.onSaveInstanceState(outState);
     }
 
     public void setTitle(int titleId) {
         title = getString(titleId);
     }
 
-    /*public void restoreActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(title);
-    }*/
+    @Override
+    public void loadFragment(FragmentKeys fragmentKey) {
+        loadFragment(fragmentKey, null);
+    }
+
+    @Override
+    public void loadFragment(FragmentKeys fragmentKey, Bundle args) {
+        loadFragment(fragmentKey, args, null);
+    }
+
+    @Override
+    public void loadFragment(FragmentKeys fragmentKey, Bundle args, FragmentKeys backKey) {
+
+        if (fragmentKey == null)
+            return;
+
+        String tag = fragmentKey.name();
+        Fragment f = getSupportFragmentManager().findFragmentByTag(tag);
+
+        if (backKey == null)
+            mBackTag = null;
+        else
+            mBackTag = backKey.name();
+
+        if (f == null) {
+            switch (fragmentKey) {
+                case BOOKS:
+                    f = new ListOfBooks();
+                    break;
+                case ADD:
+                    f = new AddBook();
+                    break;
+                case BARCODE_SCANNER:
+                    f = new BarcodeScannerFragment();
+                    break;
+                case ABOUT:
+                    f = new About();
+                    break;
+                case BOOK_DETAIL:
+                    f = new BookDetail();
+                    break;
+            }
+        }
+
+        if (f != null) {
+
+            if (args != null && f.getArguments() != null)
+                f.getArguments().putAll(args);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, f, tag)
+                    .addToBackStack(tag)
+                    .commit();
+        }
+
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
@@ -84,15 +148,13 @@ public class MainActivity extends AppCompatActivity implements Callback {
         Bundle args = new Bundle();
         args.putString(BookDetail.EAN_KEY, ean);
 
-        BookDetail fragment = new BookDetail();
-        fragment.setArguments(args);
+        loadFragment(FragmentKeys.BOOK_DETAIL, args, FragmentKeys.BOOKS);
+    }
 
-        int id = R.id.container;
-
-        getSupportFragmentManager().beginTransaction()
-                .replace(id, fragment)
-                .addToBackStack("Book Detail")
-                .commit();
+    @Override
+    public void onBackStackChanged() {
+        Log.d("MAIN", "BackStack count: " + getSupportFragmentManager().getBackStackEntryCount());
+        Log.d("MAIN", "Fragments count: " + getSupportFragmentManager().getFragments().size());
 
     }
 
@@ -105,16 +167,19 @@ public class MainActivity extends AppCompatActivity implements Callback {
         }
     }
 
-    public void goBack(View view){
+    public void goBack(View view) {
         getSupportFragmentManager().popBackStack();
     }
 
     @Override
     public void onBackPressed() {
-        if(getSupportFragmentManager().getBackStackEntryCount()<2){
+        if(getSupportFragmentManager().getBackStackEntryCount() < 2) {
             finish();
+        } else if (mBackTag != null) {
+            getSupportFragmentManager().popBackStackImmediate(mBackTag, 0);
+        } else {
+            super.onBackPressed();
         }
-        super.onBackPressed();
     }
 
 

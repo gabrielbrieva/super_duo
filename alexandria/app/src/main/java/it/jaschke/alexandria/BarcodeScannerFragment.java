@@ -6,10 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.List;
-
+import it.jaschke.alexandria.ui.FragmentKeys;
+import it.jaschke.alexandria.ui.FragmentOrchestrator;
 import me.dm7.barcodescanner.zbar.BarcodeFormat;
 import me.dm7.barcodescanner.zbar.Result;
 import me.dm7.barcodescanner.zbar.ZBarScannerView;
@@ -36,6 +36,7 @@ public class BarcodeScannerFragment extends Fragment implements ZBarScannerView.
     @Override
     public void onResume() {
         super.onResume();
+
         // register barcode handler
         mScannerView.setResultHandler(this);
         mScannerView.startCamera();
@@ -45,8 +46,13 @@ public class BarcodeScannerFragment extends Fragment implements ZBarScannerView.
     public void handleResult(Result rawResult) {
         if (rawResult.getContents() != null && rawResult.getContents().length() > 0) {
             mScannerView.stopCamera();
-            // TODO go to add book fragment
             Toast.makeText(getActivity(), "Contents = " + rawResult.getContents() + ", Format = " + rawResult.getBarcodeFormat().getName(), Toast.LENGTH_LONG).show();
+
+            Bundle args = new Bundle();
+            args.putString(AddBook.EAN_KEY, rawResult.getContents());
+
+            ((FragmentOrchestrator) getActivity()).loadFragment(FragmentKeys.ADD, args, FragmentKeys.BOOKS);
+
         } else {
             mScannerView.startCamera();
             Toast.makeText(getActivity(), "Try Again", Toast.LENGTH_LONG).show();

@@ -1,6 +1,5 @@
 package it.jaschke.alexandria;
 
-import android.app.Activity;
 import android.app.SearchManager;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -23,6 +22,8 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import it.jaschke.alexandria.api.BookListAdapter;
 import it.jaschke.alexandria.api.Callback;
 import it.jaschke.alexandria.data.AlexandriaContract;
+import it.jaschke.alexandria.ui.FragmentKeys;
+import it.jaschke.alexandria.ui.FragmentOrchestrator;
 
 
 public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, SearchView.OnQueryTextListener {
@@ -93,10 +94,7 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
         fabSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container, new AddBook())
-                        .addToBackStack(null)
-                        .commit();
+                ((FragmentOrchestrator) getActivity()).loadFragment(FragmentKeys.ADD, null, FragmentKeys.BOOKS);
             }
         });
 
@@ -105,10 +103,7 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
         fabBarcodeScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container, new BarcodeScannerFragment())
-                        .addToBackStack(null)
-                        .commit();
+                ((FragmentOrchestrator) getActivity()).loadFragment(FragmentKeys.BARCODE_SCANNER, null, FragmentKeys.BOOKS);
             }
         });
 
@@ -225,11 +220,5 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mBooksAdapter.swapCursor(null);
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        activity.setTitle(R.string.books);
     }
 }
