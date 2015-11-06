@@ -2,24 +2,30 @@ package it.jaschke.alexandria;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
+
+import it.jaschke.alexandria.ui.FragmentBase;
 import it.jaschke.alexandria.ui.FragmentKeys;
 import it.jaschke.alexandria.ui.FragmentOrchestrator;
 import me.dm7.barcodescanner.zbar.BarcodeFormat;
 import me.dm7.barcodescanner.zbar.Result;
 import me.dm7.barcodescanner.zbar.ZBarScannerView;
 
-public class BarcodeScannerFragment extends Fragment implements ZBarScannerView.ResultHandler{
+public class BarcodeScannerFragment extends FragmentBase implements ZBarScannerView.ResultHandler{
 
     private ZBarScannerView mScannerView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        initToolbar("Barcode Scanner", true);
+
         mScannerView = new ZBarScannerView(getActivity());
 
         // we define supported book barcode formats

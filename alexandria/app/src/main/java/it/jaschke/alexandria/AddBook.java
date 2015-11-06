@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -25,11 +26,12 @@ import com.squareup.picasso.Picasso;
 import it.jaschke.alexandria.data.AlexandriaContract;
 import it.jaschke.alexandria.picasso.PicassoBigCache;
 import it.jaschke.alexandria.services.BookService;
+import it.jaschke.alexandria.ui.FragmentBase;
 import it.jaschke.alexandria.ui.FragmentKeys;
 import it.jaschke.alexandria.ui.FragmentOrchestrator;
 
 
-public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class AddBook extends FragmentBase implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG = "INTENT_TO_SCAN_ACTIVITY";
     public static final String EAN_KEY = "EAN_KEY";
     private EditText ean;
@@ -60,6 +62,8 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+        initToolbar("Add Book", true);
+
         mPicasso = PicassoBigCache.INSTANCE.getPicassoBigCache(getActivity());
 
         rootView = inflater.inflate(R.layout.fragment_add_book, container, false);
@@ -88,7 +92,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
                 }
 
                 if(ean.length()<13){
-                    clearFields();
+                    //clearFields();
                     return;
                 }
 

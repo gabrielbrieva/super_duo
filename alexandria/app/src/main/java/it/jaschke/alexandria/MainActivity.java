@@ -16,6 +16,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Stack;
+
 import it.jaschke.alexandria.api.Callback;
 import it.jaschke.alexandria.ui.FragmentKeys;
 import it.jaschke.alexandria.ui.FragmentOrchestrator;
@@ -27,11 +30,15 @@ public class MainActivity extends AppCompatActivity implements Callback, Fragmen
     private BroadcastReceiver messageReciever;
     private Toolbar mToolbar;
 
-    private final String BACKTAG_KEY = "BACKTAG_KEY";
-    private String mBackTag = null;
+    private ArrayList<String> mBackStack;
+    private final String BACKSTACK_KEY = "BACKSTACk_KEY";
 
     public static final String MESSAGE_EVENT = "MESSAGE_EVENT";
     public static final String MESSAGE_KEY = "MESSAGE_EXTRA";
+
+    public MainActivity() {
+        mBackStack = new ArrayList<>();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +56,9 @@ public class MainActivity extends AppCompatActivity implements Callback, Fragmen
         title = getTitle();
 
         if (savedInstanceState == null) {
-            mBackTag = savedInstanceState.getString(BACKTAG_KEY);
             loadFragment(FragmentKeys.BOOKS);
+        } else {
+            mBackStack = savedInstanceState.getStringArrayList(BACKSTACK_KEY);
         }
 
         getSupportFragmentManager().addOnBackStackChangedListener(this);
@@ -58,8 +66,7 @@ public class MainActivity extends AppCompatActivity implements Callback, Fragmen
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-
-        outState.putString(BACKTAG_KEY, mBackTag);
+        outState.putStringArrayList(BACKSTACK_KEY, mBackStack);
 
         super.onSaveInstanceState(outState);
     }
@@ -87,10 +94,7 @@ public class MainActivity extends AppCompatActivity implements Callback, Fragmen
         String tag = fragmentKey.name();
         Fragment f = getSupportFragmentManager().findFragmentByTag(tag);
 
-        if (backKey == null)
-            mBackTag = null;
-        else
-            mBackTag = backKey.name();
+        mBackStack.add(backKey == null ? null : backKey.name());
 
         if (f == null) {
             switch (fragmentKey) {
@@ -175,8 +179,8 @@ public class MainActivity extends AppCompatActivity implements Callback, Fragmen
     public void onBackPressed() {
         if(getSupportFragmentManager().getBackStackEntryCount() < 2) {
             finish();
-        } else if (mBackTag != null) {
-            getSupportFragmentManager().popBackStackImmediate(mBackTag, 0);
+        } else if (mBackStack != null && !mBackStack.isEmpty()) {
+            getSupportFragmentManager().popBackStackImmediate(mBackStack.remove(mBackStack.size() -1 ), 0);
         } else {
             super.onBackPressed();
         }

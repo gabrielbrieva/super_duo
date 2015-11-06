@@ -2,11 +2,13 @@ package it.jaschke.alexandria;
 
 import android.app.SearchManager;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -18,15 +20,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import it.jaschke.alexandria.api.BookListAdapter;
 import it.jaschke.alexandria.api.Callback;
 import it.jaschke.alexandria.data.AlexandriaContract;
+import it.jaschke.alexandria.ui.FragmentBase;
 import it.jaschke.alexandria.ui.FragmentKeys;
 import it.jaschke.alexandria.ui.FragmentOrchestrator;
 
 
-public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, SearchView.OnQueryTextListener {
+public class ListOfBooks extends FragmentBase implements LoaderManager.LoaderCallbacks<Cursor>, SearchView.OnQueryTextListener, FloatingActionsMenu.OnFloatingActionsMenuUpdateListener {
 
     // Search string on bundle
     private final String SEARCH_KEY = "BOOK_SEARCH_KEY";
@@ -40,6 +44,10 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
 
     // SearchView MenuItem used to filter books results
     private SearchView mSvSearchBook;
+
+    // fab
+    private FloatingActionsMenu mFabMenu;
+    private View mFabContainer;
 
     // Columns used by query loader
     private static final String[] BOOKS_COLUMNS = {
@@ -64,8 +72,6 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setHasOptionsMenu(true);
-
         if (savedInstanceState != null && savedInstanceState.containsKey(SEARCH_KEY))
             mLastQuery = savedInstanceState.getString(SEARCH_KEY);
     }
@@ -73,7 +79,14 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+        initToolbar("Alexandria", false);
+
         View view = inflater.inflate(R.layout.fragment_list_of_books, container, false);
+
+        mFabContainer = view.findViewById(R.id.fab_container);
+
+        mFabMenu = (FloatingActionsMenu) view.findViewById(R.id.fab_multiple);
+        mFabMenu.setOnFloatingActionsMenuUpdateListener(this);
 
         mRvBooks = (RecyclerView) view.findViewById(R.id.rv_books);
 
@@ -107,7 +120,47 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
             }
         });
 
+        fabToggle();
+
         return view;
+    }
+
+    @Override
+    public void onMenuExpanded() {
+        fabToggle();
+    }
+
+    @Override
+    public void onMenuCollapsed() {
+        fabToggle();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        fabToggle();
+    }
+
+    /**
+     * Method to handle click out of expanded fab action menu
+     */
+    private void fabToggle() {
+        if (mFabMenu == null)
+            return;
+
+        if (mFabMenu.isExpanded()) {
+            mFabContainer.setBackgroundResource(R.drawable.fab_background);
+            mFabContainer.setClickable(true);
+            mFabContainer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mFabMenu.collapse();
+                }
+            });
+        } else {
+            mFabContainer.setBackgroundColor(Color.TRANSPARENT);
+            mFabContainer.setClickable(false);
+        }
     }
 
     @Override
