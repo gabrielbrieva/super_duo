@@ -2,17 +2,21 @@
 <resources>
     <string name="app_name">Alexandria</string>
 
-    <!-- Menu Items -->
-    <string name="books">List of Books</string>
-    <string name="scan">Scan/Add a Book</string>
-    <string name="about">About this App</string>
+    <!-- Fragment titles -->
+    <string name="title_books">List of Books</string>
+    <string name="title_scan">Scan/Add a Book</string>
+    <string name="title_barcode">Barcode Scanner</string>
+    <string name="title_book_detail">Barcode Scanner</string>
 
-    <string name="navigation_drawer_open" >Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <!-- Menu Items -->
     <string name="action_settings">Settings</string>
+    <string name="action_about">About this App</string>
+
+    <!-- Add or Scan Texts -->
     <string name="scan_button">Scan</string>
     <string name="input_hint">Insert ISBN-13. Digits only.</string>
     <string name="book_cover">Bookcover</string>
+    <string name="barcode_scan_retry">Try Again</string>
 
     <string name="ok_button">Next</string>
     <string name="cancel_button">Cancel</string>

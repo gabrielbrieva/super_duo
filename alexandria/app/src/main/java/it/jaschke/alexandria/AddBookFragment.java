@@ -1,14 +1,11 @@
 package it.jaschke.alexandria;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -31,7 +28,7 @@ import it.jaschke.alexandria.ui.FragmentKeys;
 import it.jaschke.alexandria.ui.FragmentOrchestrator;
 
 
-public class AddBook extends FragmentBase implements LoaderManager.LoaderCallbacks<Cursor> {
+public class AddBookFragment extends FragmentBase implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG = "INTENT_TO_SCAN_ACTIVITY";
     public static final String EAN_KEY = "EAN_KEY";
     private EditText ean;
@@ -46,7 +43,7 @@ public class AddBook extends FragmentBase implements LoaderManager.LoaderCallbac
 
     private Picasso mPicasso;
 
-    public AddBook() {
+    public AddBookFragment() {
         super();
         setArguments(new Bundle());
     }
@@ -62,12 +59,19 @@ public class AddBook extends FragmentBase implements LoaderManager.LoaderCallbac
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        initToolbar("Add Book", true);
+        initToolbar(R.string.title_scan, true);
 
         mPicasso = PicassoBigCache.INSTANCE.getPicassoBigCache(getActivity());
 
         rootView = inflater.inflate(R.layout.fragment_add_book, container, false);
         ean = (EditText) rootView.findViewById(R.id.ean);
+
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            String eanStr = arguments.getString(AddBookFragment.EAN_KEY);
+            if (eanStr != null && isNumeric(eanStr))
+                ean.setText(eanStr);
+        }
 
         ean.addTextChangedListener(new TextWatcher() {
             @Override
@@ -92,7 +96,7 @@ public class AddBook extends FragmentBase implements LoaderManager.LoaderCallbac
                 }
 
                 if(ean.length()<13){
-                    //clearFields();
+                    clearFields();
                     return;
                 }
 
@@ -101,16 +105,9 @@ public class AddBook extends FragmentBase implements LoaderManager.LoaderCallbac
                 bookIntent.putExtra(BookService.EAN, ean);
                 bookIntent.setAction(BookService.FETCH_BOOK);
                 getActivity().startService(bookIntent);
-                AddBook.this.restartLoader();
+                AddBookFragment.this.restartLoader();
             }
         });
-
-        Bundle arguments = getArguments();
-        if (arguments != null) {
-            String eanStr = arguments.getString(AddBook.EAN_KEY);
-            if (eanStr != null)
-                ean.setText(eanStr);
-        }
 
         rootView.findViewById(R.id.scan_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -151,7 +148,7 @@ public class AddBook extends FragmentBase implements LoaderManager.LoaderCallbac
     }
 
     @Override
-    public android.support.v4.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if(ean.getText().length()==0){
             return null;
         }
@@ -159,6 +156,7 @@ public class AddBook extends FragmentBase implements LoaderManager.LoaderCallbac
         if(eanStr.length()==10 && !eanStr.startsWith("978")){
             eanStr="978"+eanStr;
         }
+
         return new CursorLoader(
                 getActivity(),
                 AlexandriaContract.BookEntry.buildFullBookUri(Long.parseLong(eanStr)),
@@ -170,10 +168,12 @@ public class AddBook extends FragmentBase implements LoaderManager.LoaderCallbac
     }
 
     @Override
-    public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
-        if (!data.moveToFirst()) {
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (loader != null && data != null && !data.moveToFirst()) {
             return;
         }
+
+        // TODO validate null values ...
 
         String bookTitle = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.TITLE));
         ((TextView) rootView.findViewById(R.id.bookTitle)).setText(bookTitle);
@@ -213,9 +213,16 @@ public class AddBook extends FragmentBase implements LoaderManager.LoaderCallbac
         rootView.findViewById(R.id.delete_button).setVisibility(View.INVISIBLE);
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        activity.setTitle(R.string.scan);
+    public static boolean isNumeric(String str)
+    {
+        try
+        {
+            double d = Double.parseDouble(str);
+        }
+        catch(NumberFormatException nfe)
+        {
+            return false;
+        }
+        return true;
     }
 }

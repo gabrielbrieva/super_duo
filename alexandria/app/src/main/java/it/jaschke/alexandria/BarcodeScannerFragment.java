@@ -1,8 +1,6 @@
 package it.jaschke.alexandria;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,24 +15,24 @@ import me.dm7.barcodescanner.zbar.BarcodeFormat;
 import me.dm7.barcodescanner.zbar.Result;
 import me.dm7.barcodescanner.zbar.ZBarScannerView;
 
-public class BarcodeScannerFragment extends FragmentBase implements ZBarScannerView.ResultHandler{
+public class BarcodeScannerFragment extends FragmentBase implements ZBarScannerView.ResultHandler {
 
     private ZBarScannerView mScannerView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        initToolbar("Barcode Scanner", true);
+        initToolbar(R.string.title_barcode, true);
 
-        mScannerView = new ZBarScannerView(getActivity());
+            mScannerView = new ZBarScannerView(getActivity());
 
-        // we define supported book barcode formats
-        List<BarcodeFormat> formats = new ArrayList<>();
-        formats.add(BarcodeFormat.EAN13);
-        formats.add(BarcodeFormat.EAN8);
-        formats.add(BarcodeFormat.ISBN10);
-        formats.add(BarcodeFormat.ISBN13);
-        mScannerView.setFormats(formats);
+            // we define supported book barcode formats
+            List<BarcodeFormat> formats = new ArrayList<>();
+            formats.add(BarcodeFormat.EAN13);
+            formats.add(BarcodeFormat.EAN8);
+            formats.add(BarcodeFormat.ISBN10);
+            formats.add(BarcodeFormat.ISBN13);
+            mScannerView.setFormats(formats);
 
         return mScannerView;
     }
@@ -43,9 +41,11 @@ public class BarcodeScannerFragment extends FragmentBase implements ZBarScannerV
     public void onResume() {
         super.onResume();
 
-        // register barcode handler
-        mScannerView.setResultHandler(this);
-        mScannerView.startCamera();
+        if (mScannerView != null) {
+            // register barcode handler
+            mScannerView.setResultHandler(this);
+            mScannerView.startCamera();
+        }
     }
 
     @Override
@@ -55,21 +55,23 @@ public class BarcodeScannerFragment extends FragmentBase implements ZBarScannerV
             Toast.makeText(getActivity(), "Contents = " + rawResult.getContents() + ", Format = " + rawResult.getBarcodeFormat().getName(), Toast.LENGTH_LONG).show();
 
             Bundle args = new Bundle();
-            args.putString(AddBook.EAN_KEY, rawResult.getContents());
+            args.putString(AddBookFragment.EAN_KEY, rawResult.getContents());
 
+            // load add book fragment using ISBN barcode value
             ((FragmentOrchestrator) getActivity()).loadFragment(FragmentKeys.ADD, args, FragmentKeys.BOOKS);
 
         } else {
             mScannerView.startCamera();
-            Toast.makeText(getActivity(), "Try Again", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getString(R.string.barcode_scan_retry), Toast.LENGTH_LONG).show();
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mScannerView.stopCamera();
-        mScannerView.setResultHandler(null);
+        if (mScannerView != null) {
+            mScannerView.stopCamera();
+            mScannerView.setResultHandler(null);
+        }
     }
-
 }

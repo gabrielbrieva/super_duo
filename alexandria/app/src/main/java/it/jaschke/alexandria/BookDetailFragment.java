@@ -3,11 +3,9 @@ package it.jaschke.alexandria;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -27,7 +25,7 @@ import it.jaschke.alexandria.services.BookService;
 import it.jaschke.alexandria.ui.FragmentBase;
 
 
-public class BookDetail extends FragmentBase implements LoaderManager.LoaderCallbacks<Cursor> {
+public class BookDetailFragment extends FragmentBase implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String EAN_KEY = "EAN";
     private final int LOADER_ID = 10;
@@ -42,13 +40,13 @@ public class BookDetail extends FragmentBase implements LoaderManager.LoaderCall
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        initToolbar("Book Detail", true);
+        initToolbar(R.string.title_book_detail, true);
 
         mPicasso = PicassoBigCache.INSTANCE.getPicassoBigCache(getActivity());
 
         Bundle arguments = getArguments();
         if (arguments != null) {
-            ean = arguments.getString(BookDetail.EAN_KEY);
+            ean = arguments.getString(BookDetailFragment.EAN_KEY);
             getLoaderManager().restartLoader(LOADER_ID, null, this);
         }
 

@@ -5,12 +5,20 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+/**
+ * Base class to normalize fragment toolbar behavior
+ */
 public class FragmentBase extends Fragment {
 
-    protected void initToolbar(String title, boolean showUp) {
+    /**
+     * Method to enable/disable toolbar Home button as Up and toolbar title
+     * @param titleFromResurce
+     * @param showUp
+     */
+    protected void initToolbar(int titleFromResurce, boolean showUp) {
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(showUp);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(showUp);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(title);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getString(titleFromResurce));
     }
 
     @Override

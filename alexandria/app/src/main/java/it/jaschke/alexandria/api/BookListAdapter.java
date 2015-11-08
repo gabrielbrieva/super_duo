@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import it.jaschke.alexandria.ListOfBooks;
+import it.jaschke.alexandria.ListOfBooksFragment;
 import it.jaschke.alexandria.R;
 import it.jaschke.alexandria.picasso.PicassoBigCache;
 
@@ -48,7 +48,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
             mCursor.moveToPosition(adapterPosition);
-            mClickHandler.onClick(mCursor.getString(ListOfBooks.COL_BOOK_ID), this);
+            mClickHandler.onClick(mCursor.getString(ListOfBooksFragment.COL_BOOK_ID), this);
         }
     }
 
@@ -78,10 +78,10 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
     public void onBindViewHolder(ViewHolder vh, int position) {
         mCursor.moveToPosition(position);
 
-        mPicasso.load(mCursor.getString(ListOfBooks.COL_BOOK_COVER))
+        mPicasso.load(mCursor.getString(ListOfBooksFragment.COL_BOOK_COVER))
                 .into(vh.mIvCover);
-        vh.mTvTitle.setText(mCursor.getString(ListOfBooks.COL_BOOK_TITLE));
-        vh.mTvSubTitle.setText(mCursor.getString(ListOfBooks.COL_BOOK_SUBTITLE));
+        vh.mTvTitle.setText(mCursor.getString(ListOfBooksFragment.COL_BOOK_TITLE));
+        vh.mTvSubTitle.setText(mCursor.getString(ListOfBooksFragment.COL_BOOK_SUBTITLE));
     }
 
     @Override

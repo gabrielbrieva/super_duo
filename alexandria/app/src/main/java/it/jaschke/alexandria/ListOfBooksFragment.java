@@ -1,14 +1,13 @@
 package it.jaschke.alexandria;
 
 import android.app.SearchManager;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -30,7 +29,7 @@ import it.jaschke.alexandria.ui.FragmentKeys;
 import it.jaschke.alexandria.ui.FragmentOrchestrator;
 
 
-public class ListOfBooks extends FragmentBase implements LoaderManager.LoaderCallbacks<Cursor>, SearchView.OnQueryTextListener, FloatingActionsMenu.OnFloatingActionsMenuUpdateListener {
+public class ListOfBooksFragment extends FragmentBase implements LoaderManager.LoaderCallbacks<Cursor>, SearchView.OnQueryTextListener, FloatingActionsMenu.OnFloatingActionsMenuUpdateListener {
 
     // Search string on bundle
     private final String SEARCH_KEY = "BOOK_SEARCH_KEY";
@@ -79,7 +78,7 @@ public class ListOfBooks extends FragmentBase implements LoaderManager.LoaderCal
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        initToolbar("Alexandria", false);
+        initToolbar(R.string.app_name, false);
 
         View view = inflater.inflate(R.layout.fragment_list_of_books, container, false);
 
@@ -122,6 +121,8 @@ public class ListOfBooks extends FragmentBase implements LoaderManager.LoaderCal
 
         fabToggle();
 
+        restartLoader(mLastQuery);
+
         return view;
     }
 
@@ -142,7 +143,7 @@ public class ListOfBooks extends FragmentBase implements LoaderManager.LoaderCal
     }
 
     /**
-     * Method to handle click out of expanded fab action menu
+     * handle click out of expanded fab action menu
      */
     private void fabToggle() {
         if (mFabMenu == null)
