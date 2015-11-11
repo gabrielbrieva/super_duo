@@ -29,8 +29,8 @@ public class BarcodeScannerFragment extends FragmentBase implements ZBarScannerV
             // we define supported book barcode formats
             List<BarcodeFormat> formats = new ArrayList<>();
             formats.add(BarcodeFormat.EAN13);
-            formats.add(BarcodeFormat.EAN8);
-            formats.add(BarcodeFormat.ISBN10);
+            //formats.add(BarcodeFormat.EAN8);
+            //formats.add(BarcodeFormat.ISBN10);
             formats.add(BarcodeFormat.ISBN13);
             mScannerView.setFormats(formats);
 

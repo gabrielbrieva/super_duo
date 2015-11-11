@@ -1,8 +1,10 @@
 package it.jaschke.alexandria;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -16,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.squareup.picasso.Picasso;
@@ -28,18 +31,20 @@ import it.jaschke.alexandria.ui.FragmentKeys;
 import it.jaschke.alexandria.ui.FragmentOrchestrator;
 
 
-public class AddBookFragment extends FragmentBase implements LoaderManager.LoaderCallbacks<Cursor> {
+public class AddBookFragment extends FragmentBase implements LoaderManager.LoaderCallbacks<Cursor>, TextWatcher {
     private static final String TAG = "INTENT_TO_SCAN_ACTIVITY";
     public static final String EAN_KEY = "EAN_KEY";
-    private EditText ean;
+    private EditText mEtEan;
+    private TextInputLayout mTilEan;
+    private String mEanValue = "";
     private final int LOADER_ID = 1;
     private View rootView;
     private final String EAN_CONTENT="eanContent";
-    private static final String SCAN_FORMAT = "scanFormat";
-    private static final String SCAN_CONTENTS = "scanContents";
+    //private static final String SCAN_FORMAT = "scanFormat";
+    //private static final String SCAN_CONTENTS = "scanContents";
 
-    private String mScanFormat = "Format:";
-    private String mScanContents = "Contents:";
+    //private String mScanFormat = "Format:";
+    //private String mScanContents = "Contents:";
 
     private Picasso mPicasso;
 
@@ -51,9 +56,14 @@ public class AddBookFragment extends FragmentBase implements LoaderManager.Loade
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if(ean!=null) {
-            outState.putString(EAN_CONTENT, ean.getText().toString());
-        }
+        outState.putString(EAN_CONTENT, mEanValue);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        getArguments().putString(AddBookFragment.EAN_KEY, mEtEan.getText().toString());
     }
 
     @Override
@@ -64,50 +74,24 @@ public class AddBookFragment extends FragmentBase implements LoaderManager.Loade
         mPicasso = PicassoBigCache.INSTANCE.getPicassoBigCache(getActivity());
 
         rootView = inflater.inflate(R.layout.fragment_add_book, container, false);
-        ean = (EditText) rootView.findViewById(R.id.ean);
 
-        Bundle arguments = getArguments();
-        if (arguments != null) {
-            String eanStr = arguments.getString(AddBookFragment.EAN_KEY);
-            if (eanStr != null && isNumeric(eanStr))
-                ean.setText(eanStr);
+        mTilEan = (TextInputLayout) rootView.findViewById(R.id.eantextinputlayou);
+        mTilEan.setErrorEnabled(true);
+
+        mEtEan = (EditText) rootView.findViewById(R.id.ean);
+
+        if (savedInstanceState != null && savedInstanceState.getString(EAN_CONTENT) != null) {
+            mEanValue = toIsbn13(savedInstanceState.getString(EAN_CONTENT));
+        } else {
+            Bundle arguments = getArguments();
+            if (arguments != null && arguments.getString(AddBookFragment.EAN_KEY) != null) {
+                mEanValue = toIsbn13(arguments.getString(AddBookFragment.EAN_KEY));
+            }
         }
 
-        ean.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                //no need
-            }
+        mEtEan.addTextChangedListener(this);
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                //no need
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-                Log.d("ADD_BOOK", "ISBN Text Editor: " + s.toString());
-
-                String ean =s.toString();
-                //catch isbn10 numbers
-                if(ean.length()==10 && !ean.startsWith("978")){
-                    ean="978"+ean;
-                }
-
-                if(ean.length()<13){
-                    clearFields();
-                    return;
-                }
-
-                //Once we have an ISBN, start a book intent
-                Intent bookIntent = new Intent(getActivity(), BookService.class);
-                bookIntent.putExtra(BookService.EAN, ean);
-                bookIntent.setAction(BookService.FETCH_BOOK);
-                getActivity().startService(bookIntent);
-                AddBookFragment.this.restartLoader();
-            }
-        });
+        mEtEan.setText(mEanValue);
 
         rootView.findViewById(R.id.scan_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,28 +103,83 @@ public class AddBookFragment extends FragmentBase implements LoaderManager.Loade
         rootView.findViewById(R.id.save_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ean.setText("");
+                mEtEan.setText("");
+                restartLoader();
             }
         });
 
         rootView.findViewById(R.id.delete_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent bookIntent = new Intent(getActivity(), BookService.class);
-                bookIntent.putExtra(BookService.EAN, ean.getText().toString());
-                bookIntent.setAction(BookService.DELETE_BOOK);
-                getActivity().startService(bookIntent);
-                ean.setText("");
+
+                if (mEtEan.getText() != null && mEtEan.getText().length() > 0) {
+                    Intent bookIntent = new Intent(getActivity(), BookService.class);
+                    bookIntent.putExtra(BookService.EAN, mEtEan.getText().toString());
+                    bookIntent.setAction(BookService.DELETE_BOOK);
+                    getActivity().startService(bookIntent);
+                }
+
+                mEtEan.setText("");
+                restartLoader();
             }
         });
 
-        /*if(savedInstanceState != null){
-            if (ean.getText() == null || ean.getText().length() == 0)
-                ean.setText(savedInstanceState.getString(EAN_CONTENT));
-            ean.setHint("");
-        }*/
-
         return rootView;
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+    @Override
+    public void afterTextChanged(Editable s) {
+        Log.d("ADD_BOOK", "ISBN Text Editor: " + s.toString());
+
+        mEanValue = toIsbn13(s.toString());
+
+        if (s.toString().length() == 13) {
+            startBookSearch(mEanValue);
+        }
+    }
+
+    private String toIsbn13(String barcode) {
+
+        if (barcode == null) {
+            return "";
+        }
+
+        if (barcode.length() > 0) {
+
+            String b = barcode.toString();
+
+            //catch isbn10 numbers
+
+            if (b.length() == 10 && !b.startsWith("978")) {
+                b = "978" + b;
+            }
+
+            if (b.length() == 13 && isNumeric(b)) {
+                return b;
+            }
+
+            mTilEan.setError("Invalid Format: Must ISBN-13 Format");
+        } else {
+            mTilEan.setError(null);
+        }
+
+        return barcode;
+    }
+
+    private void startBookSearch(String ean) {
+        //Once we have an ISBN, start a book intent
+        Intent bookIntent = new Intent(getActivity(), BookService.class);
+        bookIntent.putExtra(BookService.EAN, ean);
+        bookIntent.setAction(BookService.FETCH_BOOK);
+        getActivity().startService(bookIntent);
+
+        AddBookFragment.this.restartLoader();
     }
 
     private void restartLoader(){
@@ -149,10 +188,10 @@ public class AddBookFragment extends FragmentBase implements LoaderManager.Loade
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if(ean.getText().length()==0){
+        if(mEtEan.getText().length()==0){
             return null;
         }
-        String eanStr= ean.getText().toString();
+        String eanStr= mEtEan.getText().toString();
         if(eanStr.length()==10 && !eanStr.startsWith("978")){
             eanStr="978"+eanStr;
         }
@@ -200,7 +239,6 @@ public class AddBookFragment extends FragmentBase implements LoaderManager.Loade
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
     }
 
     private void clearFields(){
@@ -223,6 +261,7 @@ public class AddBookFragment extends FragmentBase implements LoaderManager.Loade
         {
             return false;
         }
+
         return true;
     }
 }

@@ -91,6 +91,8 @@ public class BookService extends IntentService {
 
         bookEntry.close();
 
+        // TODO use retrofit to http requests
+
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
         String bookJsonString = null;

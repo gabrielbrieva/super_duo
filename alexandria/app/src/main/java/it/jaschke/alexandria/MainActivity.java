@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -133,9 +134,9 @@ public class MainActivity extends AppCompatActivity implements Callback, Fragmen
 
             // we start the fragment transaction
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, f, tag)
-                    .addToBackStack(tag)
-                    .commit();
+                .replace(R.id.container, f, tag)
+                .addToBackStack(tag)
+                .commit();
         }
 
     }

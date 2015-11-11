@@ -121,6 +121,7 @@ public class ListOfBooksFragment extends FragmentBase implements LoaderManager.L
 
         fabToggle();
 
+        // TODO it is right way to go??
         restartLoader(mLastQuery);
 
         return view;

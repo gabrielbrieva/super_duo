@@ -50,7 +50,7 @@
                     android:layout_height="wrap_content"
                     fab:fab_colorNormal="@color/fab_white"
                     fab:fab_colorPressed="@color/fab_white_pressed"
-                    fab:fab_title="Enter ISBN"
+                    fab:fab_title="@string/enter_isbn"
                     />
 
                 <com.getbase.floatingactionbutton.FloatingActionButton
@@ -59,7 +59,7 @@
                     android:layout_height="wrap_content"
                     fab:fab_colorNormal="@color/fab_white"
                     fab:fab_colorPressed="@color/fab_white_pressed"
-                    fab:fab_title="Scan ISBN Barcode"/>
+                    fab:fab_title="@string/scan_isbn_barcode"/>
 
             </com.getbase.floatingactionbutton.FloatingActionsMenu>
         </FrameLayout>
