@@ -6,7 +6,7 @@
     <string name="title_books">List of Books</string>
     <string name="title_scan">Scan/Add a Book</string>
     <string name="title_barcode">Barcode Scanner</string>
-    <string name="title_book_detail">Barcode Scanner</string>
+    <string name="title_book_detail">Book Detail</string>
 
     <!-- Menu Items -->
     <string name="action_settings">Settings</string>

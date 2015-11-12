@@ -1,6 +1,5 @@
 package it.jaschke.alexandria;
 
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -18,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 import com.squareup.picasso.Picasso;
@@ -40,11 +38,6 @@ public class AddBookFragment extends FragmentBase implements LoaderManager.Loade
     private final int LOADER_ID = 1;
     private View rootView;
     private final String EAN_CONTENT="eanContent";
-    //private static final String SCAN_FORMAT = "scanFormat";
-    //private static final String SCAN_CONTENTS = "scanContents";
-
-    //private String mScanFormat = "Format:";
-    //private String mScanContents = "Contents:";
 
     private Picasso mPicasso;
 
@@ -146,9 +139,11 @@ public class AddBookFragment extends FragmentBase implements LoaderManager.Loade
 
     private String toIsbn13(String barcode) {
 
-        if (barcode == null) {
-            return "";
-        }
+        mTilEan.setErrorEnabled(false);
+        mTilEan.setError(null);
+
+        if (barcode == null)
+            barcode = "";
 
         if (barcode.length() > 0) {
 
@@ -164,10 +159,12 @@ public class AddBookFragment extends FragmentBase implements LoaderManager.Loade
                 return b;
             }
 
+            mTilEan.setErrorEnabled(true);
             mTilEan.setError("Invalid Format: Must ISBN-13 Format");
-        } else {
-            mTilEan.setError(null);
+
         }
+
+        clearFields();
 
         return barcode;
     }
@@ -209,39 +206,43 @@ public class AddBookFragment extends FragmentBase implements LoaderManager.Loade
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (loader != null && data != null && !data.moveToFirst()) {
-            return;
+
+            // TODO show empty result
+
+            clearFields();
+        } else {
+
+            // TODO show book detail and validate null values before to use...
+
+            String bookTitle = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.TITLE));
+            ((TextView) rootView.findViewById(R.id.bookTitle)).setText(bookTitle);
+
+            String bookSubTitle = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.SUBTITLE));
+            ((TextView) rootView.findViewById(R.id.bookSubTitle)).setText(bookSubTitle);
+
+            String authors = data.getString(data.getColumnIndex(AlexandriaContract.AuthorEntry.AUTHOR));
+            String[] authorsArr = authors.split(",");
+            ((TextView) rootView.findViewById(R.id.authors)).setLines(authorsArr.length);
+            ((TextView) rootView.findViewById(R.id.authors)).setText(authors.replace(",", "\n"));
+            String imgUrl = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.IMAGE_URL));
+            if (Patterns.WEB_URL.matcher(imgUrl).matches()) {
+                mPicasso.load(imgUrl).into((ImageView) rootView.findViewById(R.id.bookCover));
+                rootView.findViewById(R.id.bookCover).setVisibility(View.VISIBLE);
+            }
+
+            String categories = data.getString(data.getColumnIndex(AlexandriaContract.CategoryEntry.CATEGORY));
+            ((TextView) rootView.findViewById(R.id.categories)).setText(categories);
+
+            rootView.findViewById(R.id.save_button).setVisibility(View.VISIBLE);
+            rootView.findViewById(R.id.delete_button).setVisibility(View.VISIBLE);
         }
-
-        // TODO validate null values ...
-
-        String bookTitle = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.TITLE));
-        ((TextView) rootView.findViewById(R.id.bookTitle)).setText(bookTitle);
-
-        String bookSubTitle = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.SUBTITLE));
-        ((TextView) rootView.findViewById(R.id.bookSubTitle)).setText(bookSubTitle);
-
-        String authors = data.getString(data.getColumnIndex(AlexandriaContract.AuthorEntry.AUTHOR));
-        String[] authorsArr = authors.split(",");
-        ((TextView) rootView.findViewById(R.id.authors)).setLines(authorsArr.length);
-        ((TextView) rootView.findViewById(R.id.authors)).setText(authors.replace(",","\n"));
-        String imgUrl = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.IMAGE_URL));
-        if(Patterns.WEB_URL.matcher(imgUrl).matches()){
-            mPicasso.load(imgUrl).into((ImageView) rootView.findViewById(R.id.bookCover));
-            rootView.findViewById(R.id.bookCover).setVisibility(View.VISIBLE);
-        }
-
-        String categories = data.getString(data.getColumnIndex(AlexandriaContract.CategoryEntry.CATEGORY));
-        ((TextView) rootView.findViewById(R.id.categories)).setText(categories);
-
-        rootView.findViewById(R.id.save_button).setVisibility(View.VISIBLE);
-        rootView.findViewById(R.id.delete_button).setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
     }
 
-    private void clearFields(){
+    private void clearFields() {
         ((TextView) rootView.findViewById(R.id.bookTitle)).setText("");
         ((TextView) rootView.findViewById(R.id.bookSubTitle)).setText("");
         ((TextView) rootView.findViewById(R.id.authors)).setText("");
