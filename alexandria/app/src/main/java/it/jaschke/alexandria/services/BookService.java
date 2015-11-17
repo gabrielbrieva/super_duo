@@ -99,6 +99,7 @@ public class BookService extends IntentService {
 
         if (!Utils.isNetworkConnected(this.getApplicationContext())) {
             // without internet connection
+            // TODO: notify user about connection status error
             return;
         }
 
@@ -110,7 +111,6 @@ public class BookService extends IntentService {
             public void success(JsonObject bookJson, Response response) {
 
                 if (bookJson != null) {
-
                     try {
 
                         JsonArray bookArray;
@@ -154,12 +154,15 @@ public class BookService extends IntentService {
                     } catch (Exception e) {
                         Log.e(LOG_TAG, "Error ", e);
                     }
+                } else {
+                    // empty result
+                    // TODO: notify user about response error
                 }
             }
 
             @Override
             public void failure(RetrofitError error) {
-
+                // TODO: notify user about connection status error
             }
         });
     }
