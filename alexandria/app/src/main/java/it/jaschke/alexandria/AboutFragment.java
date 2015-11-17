@@ -15,8 +15,7 @@ public class AboutFragment extends FragmentBase {
 
         initToolbar(R.string.action_about, true);
 
-        View rootView = inflater.inflate(R.layout.fragment_about, container, false);
-        return rootView;
+        return inflater.inflate(R.layout.fragment_about, container, false);
     }
 
 }

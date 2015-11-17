@@ -149,6 +149,10 @@ public class MainActivity extends AppCompatActivity implements Callback, Fragmen
             // start setting activity using intent
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
+        } else if (id == R.id.action_about) {
+            // show about fragment
+            loadFragment(FragmentKeys.ABOUT, null, FragmentKeys.BOOKS);
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

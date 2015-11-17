@@ -159,7 +159,7 @@ public class BookService extends IntentService {
         final String IMG_URL = "thumbnail";
 
         try {
-            // TODO check null return values
+            // TODO check internet connection and null return values
             JSONObject bookJson = new JSONObject(bookJsonString);
             JSONArray bookArray;
             if(bookJson.has(ITEMS)){
