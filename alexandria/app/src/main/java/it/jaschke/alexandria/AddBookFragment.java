@@ -176,6 +176,7 @@ public class AddBookFragment extends FragmentBase implements LoaderManager.Loade
         bookIntent.setAction(BookService.FETCH_BOOK);
         getActivity().startService(bookIntent);
 
+        // TODO: is required ?? cursor must notified ¬¬
         AddBookFragment.this.restartLoader();
     }
 
