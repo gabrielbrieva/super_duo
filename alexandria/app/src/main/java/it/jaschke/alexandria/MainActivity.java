@@ -191,7 +191,11 @@ public class MainActivity extends AppCompatActivity implements Callback, Fragmen
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getStringExtra(MESSAGE_KEY) != null) {
-                Toast.makeText(MainActivity.this, intent.getStringExtra(MESSAGE_KEY), Toast.LENGTH_LONG).show();
+                Fragment f = getSupportFragmentManager().findFragmentByTag(FragmentKeys.ADD.name());
+
+                if (f != null && f instanceof AddBookFragment) {
+                    ((AddBookFragment) f).showMessageResult(intent.getStringExtra(MESSAGE_KEY));
+                }
             }
         }
     }

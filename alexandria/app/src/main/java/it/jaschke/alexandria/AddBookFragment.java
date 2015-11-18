@@ -170,13 +170,14 @@ public class AddBookFragment extends FragmentBase implements LoaderManager.Loade
     }
 
     private void startBookSearch(String ean) {
+        showMessageResult(getString(R.string.loading));
+
         //Once we have an ISBN, start a book intent
         Intent bookIntent = new Intent(getActivity(), BookService.class);
         bookIntent.putExtra(BookService.EAN, ean);
         bookIntent.setAction(BookService.FETCH_BOOK);
         getActivity().startService(bookIntent);
 
-        // TODO: is required ?? cursor must notified ¬¬
         AddBookFragment.this.restartLoader();
     }
 
@@ -207,13 +208,10 @@ public class AddBookFragment extends FragmentBase implements LoaderManager.Loade
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (loader != null && data != null && !data.moveToFirst()) {
-
-            // TODO show empty result
-
             clearFields();
         } else {
 
-            // TODO show book detail and validate null values before to use...
+            hideMessageResult();
 
             String bookTitle = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.TITLE));
             ((TextView) rootView.findViewById(R.id.bookTitle)).setText(bookTitle);
@@ -226,6 +224,7 @@ public class AddBookFragment extends FragmentBase implements LoaderManager.Loade
             ((TextView) rootView.findViewById(R.id.authors)).setLines(authorsArr.length);
             ((TextView) rootView.findViewById(R.id.authors)).setText(authors.replace(",", "\n"));
             String imgUrl = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.IMAGE_URL));
+
             if (Patterns.WEB_URL.matcher(imgUrl).matches()) {
                 mPicasso.load(imgUrl).into((ImageView) rootView.findViewById(R.id.bookCover));
                 rootView.findViewById(R.id.bookCover).setVisibility(View.VISIBLE);
@@ -241,6 +240,16 @@ public class AddBookFragment extends FragmentBase implements LoaderManager.Loade
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+    }
+
+    public void showMessageResult(String message) {
+        ((TextView) rootView.findViewById(R.id.tv_message)).setText(message);
+        rootView.findViewById(R.id.tv_message).setVisibility(View.VISIBLE);
+    }
+
+    public void hideMessageResult() {
+        ((TextView) rootView.findViewById(R.id.tv_message)).setText("");
+        rootView.findViewById(R.id.tv_message).setVisibility(View.GONE);
     }
 
     private void clearFields() {

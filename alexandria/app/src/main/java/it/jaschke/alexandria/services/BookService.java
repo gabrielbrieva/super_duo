@@ -110,16 +110,14 @@ public class BookService extends IntentService {
             @Override
             public void success(JsonObject bookJson, Response response) {
 
-                if (bookJson != null) {
+                if (bookJson != null || !bookJson.isJsonNull()) {
                     try {
 
                         JsonArray bookArray;
                         if (bookJson.has(ITEMS)) {
                             bookArray = bookJson.getAsJsonArray(ITEMS);
                         } else {
-                            Intent messageIntent = new Intent(MainActivity.MESSAGE_EVENT);
-                            messageIntent.putExtra(MainActivity.MESSAGE_KEY,getResources().getString(R.string.not_found));
-                            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(messageIntent);
+                            requestFeedback(getString(R.string.not_found));
                             return;
                         }
 
@@ -152,19 +150,26 @@ public class BookService extends IntentService {
                         }
 
                     } catch (Exception e) {
+                        requestFeedback(getString(R.string.request_error));
                         Log.e(LOG_TAG, "Error ", e);
                     }
                 } else {
                     // empty result
-                    // TODO: notify user about response error
+                    requestFeedback(getString(R.string.not_found));
                 }
             }
 
             @Override
             public void failure(RetrofitError error) {
-                // TODO: notify user about connection status error
+                requestFeedback(getString(R.string.not_found));
             }
         });
+    }
+
+    private void requestFeedback(String message) {
+        Intent messageIntent = new Intent(MainActivity.MESSAGE_EVENT);
+        messageIntent.putExtra(MainActivity.MESSAGE_KEY, message);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(messageIntent);
     }
 
     private void writeBackBook(String ean, String title, String subtitle, String desc, String imgUrl) {
