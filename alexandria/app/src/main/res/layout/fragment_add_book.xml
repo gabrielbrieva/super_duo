@@ -65,53 +65,62 @@
         android:layout_above="@+id/linearLayout">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/bookTitle"
-                android:textSize="@dimen/head_line"
-                android:textIsSelectable="true"
-                android:textStyle="bold"
-                android:layout_marginTop="25dp"
-                android:text="Book Title"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/bookSubTitle"
-                android:layout_marginTop="10dp"
-                android:maxLines="3"
-                android:ellipsize="end"
-                android:text="Subtitle"
-                />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/authors"
-                android:gravity="end"
-                android:textSize="@dimen/small_fontsize"
-                android:layout_marginTop="20dp"
-                android:text="authors"
-                />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
 
             <ImageView
-                android:layout_width="wrap_content"
+                android:layout_width="90dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/bookCover"
-                android:contentDescription="@string/book_cover"/>
+                android:src="@drawable/cover_missing"
+                android:contentDescription="@string/book_cover"
+                android:adjustViewBounds="true" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/categories"
-                android:textSize="@dimen/small_fontsize"
-                android:layout_marginTop="20dp"
-                android:text="Categories"/>
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_marginLeft="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/bookTitle"
+                    android:textSize="@dimen/head_line"
+                    android:textIsSelectable="true"
+                    android:textStyle="bold"
+                    android:text="Book Title"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/bookSubTitle"
+                    android:layout_marginTop="5dp"
+                    android:maxLines="3"
+                    android:ellipsize="end"
+                    android:text="Subtitle"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/authors"
+                    android:textSize="@dimen/small_fontsize"
+                    android:layout_marginTop="10dp"
+                    android:text="Authors"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/categories"
+                    android:textSize="@dimen/small_fontsize"
+                    android:layout_marginTop="5dp"
+                    android:text="Categories"/>
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 

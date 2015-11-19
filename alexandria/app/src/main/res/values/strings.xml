@@ -18,6 +18,9 @@
     <string name="book_cover">Bookcover</string>
     <string name="barcode_scan_retry">Try Again</string>
 
+    <string name="authors">Authors</string>
+    <string name="categories">Categories</string>
+
     <string name="ok_button">Next</string>
     <string name="delete">Delete Book</string>
     <string name="cancel_button">Cancel</string>

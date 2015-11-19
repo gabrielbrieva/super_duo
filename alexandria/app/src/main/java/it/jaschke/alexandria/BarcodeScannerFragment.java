@@ -52,7 +52,7 @@ public class BarcodeScannerFragment extends FragmentBase implements ZBarScannerV
     public void handleResult(Result rawResult) {
         if (rawResult.getContents() != null && rawResult.getContents().length() > 0) {
             mScannerView.stopCamera();
-            Toast.makeText(getActivity(), "Contents = " + rawResult.getContents() + ", Format = " + rawResult.getBarcodeFormat().getName(), Toast.LENGTH_LONG).show();
+            //Toast.makeText(getActivity(), "Contents = " + rawResult.getContents() + ", Format = " + rawResult.getBarcodeFormat().getName(), Toast.LENGTH_LONG).show();
 
             Bundle args = new Bundle();
             args.putString(AddBookFragment.EAN_KEY, rawResult.getContents());

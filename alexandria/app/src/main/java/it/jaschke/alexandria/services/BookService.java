@@ -99,7 +99,7 @@ public class BookService extends IntentService {
 
         if (!Utils.isNetworkConnected(this.getApplicationContext())) {
             // without internet connection
-            // TODO: notify user about connection status error
+            // TODO: requestFeedback("Internet Connection");
             return;
         }
 
