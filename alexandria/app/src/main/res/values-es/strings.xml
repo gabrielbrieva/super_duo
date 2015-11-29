@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Fragment titles -->
+    <string name="title_books">Libros</string>
+    <string name="title_scan">Obtener Libro po ISBN</string>
+    <string name="title_barcode">Leer Coódigo de Barra</string>
+    <string name="title_book_detail">Detalle de Libro</string>
+
+    <!-- Menu Items -->
+    <string name="action_settings">Configuraciones</string>
+    <string name="action_about">Sobre la Applicación</string>
+
+    <!-- Add or Scan Texts -->
+    <string name="scan_button">Leer</string>
+    <string name="input_hint">Ingresar ISBN-13 (Solo dígitos).</string>
+    <string name="book_cover">Tapa</string>
+    <string name="barcode_scan_retry">Intenta Nuevamente</string>
+
+    <string name="authors">Autores</string>
+    <string name="categories">Categorías</string>
+
+    <string name="ok_button">Siguiente</string>
+    <string name="delete">Borrar Libro</string>
+    <string name="cancel_button">Cancelar</string>
+
+    <string name="loading">Buscando...</string>
+    <string name="no_internet_connection">Es imposible encontrar el libro, no tienes conexión a internet.</string>
+    <string name="not_found">No se encontró el libro</string>
+    <string name="request_error">Error en la busqueda del libro</string>
+    <string name="search">Buscar</string>
+
+
+    <string name="pref_startScreen">Pantalla de Inicio</string>
+
+    <string name="action_share">Compartir</string>
+    <string name="share_text">Debes leer este libro: </string>
+
+    <string name="about_text">Esta aplicación obtiene información de libros usando la API de Google Books, todos los titulos, imagenes de tapas y autores se obtienen desde allí.
+        La versión original de esta aplicación fue desarrollada por Sascha Jaschke. Udacity modificó la aplicación y se las entregó a los estudiantes de Udacity Android Nanodegree.
+        Ahora la aplicación tiene soporte completo para leer el código de barra (ISBN) de los libros usando la cámara del telefono también!!!</string>
+    <string name="developed_by">Originalmente desarrollada por Sascha Jaschke, modificada por Udacity y mejorada por Gabriel Brieva</string>
+
+    <string name="enter_isbn">Ingresa ISBN</string>
+    <string name="scan_isbn_barcode">Leer Código de Barra ISBN</string>
+    <string name="search_hint">Buscar...</string>
+</resources>

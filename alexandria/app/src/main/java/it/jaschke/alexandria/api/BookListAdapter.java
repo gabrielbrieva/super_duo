@@ -33,6 +33,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
         public final ImageView mIvCover;
         public final TextView mTvTitle;
         public final TextView mTvSubTitle;
+        public final View mVDivider;
 
         public ViewHolder(View view) {
             super(view);
@@ -40,6 +41,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
             mIvCover = (ImageView) view.findViewById(R.id.fullBookCover);
             mTvTitle = (TextView) view.findViewById(R.id.listBookTitle);
             mTvSubTitle = (TextView) view.findViewById(R.id.listBookSubTitle);
+            mVDivider = view.findViewById(R.id.listBookDivider);
 
             view.setOnClickListener(this);
         }
@@ -82,6 +84,10 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
                 .into(vh.mIvCover);
         vh.mTvTitle.setText(mCursor.getString(ListOfBooksFragment.COL_BOOK_TITLE));
         vh.mTvSubTitle.setText(mCursor.getString(ListOfBooksFragment.COL_BOOK_SUBTITLE));
+
+        if (position != (mCursor.getCount() -1))
+            vh.mVDivider.setVisibility(View.VISIBLE);
+
     }
 
     @Override

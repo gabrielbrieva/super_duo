@@ -38,7 +38,7 @@ public enum PicassoBigCache {
         builder.downloader(createBigCacheDownloader(ctx));
         picassoInstance = builder.build();
         // debug...
-        picassoInstance.setIndicatorsEnabled(true);
+        //picassoInstance.setIndicatorsEnabled(true);
     }
 
     public Picasso getPicassoBigCache(Context ctx) {

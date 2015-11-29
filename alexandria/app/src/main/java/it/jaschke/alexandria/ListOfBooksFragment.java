@@ -1,6 +1,8 @@
 package it.jaschke.alexandria;
 
 import android.app.SearchManager;
+import android.app.SearchableInfo;
+import android.content.ComponentName;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -8,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -176,6 +179,8 @@ public class ListOfBooksFragment extends FragmentBase implements LoaderManager.L
         // Assumes current activity is the searchable activity
         mSvSearchBook.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
         //searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+
+        mSvSearchBook.setQueryHint(getString(R.string.search_hint));
 
         if (mLastQuery != null && mLastQuery.length() > 0) {
             searchItem.expandActionView();

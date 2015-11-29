@@ -32,7 +32,7 @@ public class GoogleBookServiceFactory {
                         request.addHeader("Accept", "application/json");
                     }
                 })
-                .setLogLevel(RestAdapter.LogLevel.FULL) // only by debugging purpose
+                //.setLogLevel(RestAdapter.LogLevel.FULL) // only by debugging purpose
                 .build()
                 .create(GoogleBookService.class);
     }

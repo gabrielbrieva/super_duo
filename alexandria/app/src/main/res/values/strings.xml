@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Alexandria</string>
+    <string name="app_name" translatable="false" >Alexandria</string>
 
     <!-- Fragment titles -->
     <string name="title_books">List of Books</string>
@@ -26,21 +26,24 @@
     <string name="cancel_button">Cancel</string>
 
     <string name="loading">Loading...</string>
+    <string name="no_internet_connection">Impossible to get book, you don\'t have Internet connection.</string>
     <string name="not_found">No Book Found</string>
     <string name="request_error">Request Error</string>
     <string name="search">Search</string>
 
 
     <string name="pref_startScreen">Select Start Screen</string>
+    <string name="pref_startScreen_default" translatable="false">0</string>
 
     <string name="action_share">Share</string>
     <string name="share_text">A must read book: </string>
 
     <string name="about_text">This application gets book information from a Google API. All titles, cover images, and author information come from there.
-    The original version of this app was built by Sascha Jaschke, and a modified version is given to students in the Udacity Android Nanodegree program. </string>
+    The original version of this app was built by Sascha Jaschke, and a modified version is given to students in the Udacity Android Nanodegree program.
+    Now Alexandria App has full support to read ISBN barcode using phone camera too!!!</string>
     <string name="developed_by">Developed by Sascha Jaschke and Udacity</string>
-
 
     <string name="enter_isbn">Enter ISBN</string>
     <string name="scan_isbn_barcode">Scan ISBN Barcode</string>
+    <string name="search_hint">Search...</string>
 </resources>

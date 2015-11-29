@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -30,6 +31,11 @@ public class MainActivity extends AppCompatActivity implements Callback, Fragmen
     // custom backstack
     private ArrayList<String> mBackStack;
     private final String BACKSTACK_KEY = "BACKSTACk_KEY";
+    private int mStartFragmentIndex;
+    private int mLastStartFragmentIndex;
+
+    private static final int LIST_OF_BOOK_INDEX = 0;
+    private static final int ADD_BOOK_INDEX = 1;
 
     public static final String MESSAGE_EVENT = "MESSAGE_EVENT";
     public static final String MESSAGE_KEY = "MESSAGE_EXTRA";
@@ -41,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements Callback, Fragmen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+       mStartFragmentIndex = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString("pref_startFragment", "0"));
 
         // setting main layout
         setContentView(R.layout.activity_main);
@@ -54,8 +62,13 @@ public class MainActivity extends AppCompatActivity implements Callback, Fragmen
         LocalBroadcastManager.getInstance(this).registerReceiver(messageReciever, filter);
 
         if (savedInstanceState == null) {
-            // load book list if is the first time
-            loadFragment(FragmentKeys.BOOKS);
+            if (mStartFragmentIndex == ADD_BOOK_INDEX) {
+                //mBackStack.add(FragmentKeys.BOOKS.name());
+                loadFragment(FragmentKeys.ADD, null, FragmentKeys.BOOKS);
+            } else {
+                // load book list if is the first time
+                loadFragment(FragmentKeys.BOOKS);
+            }
         } else {
             // restore custom backstack from savedinstances
             mBackStack = savedInstanceState.getStringArrayList(BACKSTACK_KEY);
@@ -203,8 +216,16 @@ public class MainActivity extends AppCompatActivity implements Callback, Fragmen
     @Override
     public void onBackPressed() {
         if(getSupportFragmentManager().getBackStackEntryCount() < 2) {
-            // application exit
-            finish();
+            if (mBackStack.size() == 1 && mStartFragmentIndex == ADD_BOOK_INDEX
+                    && mBackStack.get(0).equals(FragmentKeys.BOOKS.name())) {
+                // specific case to load ListOfBook fragment
+                super.onBackPressed();
+                mBackStack.clear();
+                loadFragment(FragmentKeys.BOOKS);
+            } else {
+                // application exit
+                finish();
+            }
         } else if (mBackStack != null && !mBackStack.isEmpty()) {
             // pop from custom backstack and start popBackStack
             getSupportFragmentManager().popBackStackImmediate(mBackStack.remove(mBackStack.size() -1 ), 0);
