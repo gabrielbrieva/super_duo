@@ -3,6 +3,7 @@ package barqsoft.footballscores;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -20,16 +21,20 @@ import java.util.Date;
  */
 public class PagerFragment extends Fragment
 {
-    public static final int NUM_PAGES = 5;
+    public static final int NUM_PAGES = 5; // five pages to show [before yesterday][yesterday][today][tomorrow][day after tomorrow]
     public ViewPager mPagerHandler;
     private myPageAdapter mPagerAdapter;
+    private TabLayout mTabsLayout;
     private MainScreenFragment[] viewFragments = new MainScreenFragment[5];
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
         View rootView = inflater.inflate(R.layout.pager_fragment, container, false);
         mPagerHandler = (ViewPager) rootView.findViewById(R.id.pager);
+        mTabsLayout = (TabLayout) rootView.findViewById(R.id.tabs);
         mPagerAdapter = new myPageAdapter(getChildFragmentManager());
+
         for (int i = 0;i < NUM_PAGES;i++)
         {
             Date fragmentdate = new Date(System.currentTimeMillis()+((i-2)*86400000));
@@ -37,10 +42,14 @@ public class PagerFragment extends Fragment
             viewFragments[i] = new MainScreenFragment();
             viewFragments[i].setFragmentDate(mformat.format(fragmentdate));
         }
+
         mPagerHandler.setAdapter(mPagerAdapter);
-        mPagerHandler.setCurrentItem(MainActivity.current_fragment);
+        mPagerHandler.setCurrentItem(MainActivity.CurrentFrameIndex);
+        mTabsLayout.setupWithViewPager(mPagerHandler);
+
         return rootView;
     }
+
     private class myPageAdapter extends FragmentStatePagerAdapter
     {
         @Override

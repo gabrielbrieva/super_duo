@@ -2,27 +2,43 @@ package barqsoft.footballscores;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends ActionBarActivity
+public class MainActivity extends AppCompatActivity
 {
-    public static int selected_match_id;
-    public static int current_fragment = 2;
-    public static String LOG_TAG = "MainActivity";
-    private final String save_tag = "Save Test";
-    private PagerFragment my_main;
+    public static int SelectedMatchId;
+    public static int CurrentFrameIndex = 2; // First time is 2 (middle of 5 pages).
+
+    private final String LOG_TAG = MainActivity.class.getSimpleName();
+
+    private final String CURRENT_PAGE_KEY = "CURRENT_PAGE_KEY";
+    private final String CURRENT_SELECTED_KEY = "CURRENT_SELECTED_KEY";
+    private final String PAGER_FRAGMENT_KEY = "PAGER_FRAGMENT_KEY";
+
+    private PagerFragment pagerFragment;
+
+    private Toolbar mToolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
+
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+
         Log.d(LOG_TAG, "Reached MainActivity onCreate");
+
         if (savedInstanceState == null) {
-            my_main = new PagerFragment();
+            pagerFragment = new PagerFragment();
+
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, my_main)
+                    .add(R.id.container, pagerFragment)
                     .commit();
         }
     }
@@ -56,24 +72,30 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onSaveInstanceState(Bundle outState)
     {
-        Log.v(save_tag,"will save");
-        Log.v(save_tag,"fragment: "+String.valueOf(my_main.mPagerHandler.getCurrentItem()));
-        Log.v(save_tag,"selected id: "+selected_match_id);
-        outState.putInt("Pager_Current",my_main.mPagerHandler.getCurrentItem());
-        outState.putInt("Selected_match",selected_match_id);
-        getSupportFragmentManager().putFragment(outState,"my_main",my_main);
+        Log.v(LOG_TAG,"will save");
+        Log.v(LOG_TAG,"fragment: " + String.valueOf(pagerFragment.mPagerHandler.getCurrentItem()));
+        Log.v(LOG_TAG,"selected id: " + SelectedMatchId);
+
+        outState.putInt(CURRENT_PAGE_KEY, pagerFragment.mPagerHandler.getCurrentItem());
+        outState.putInt(CURRENT_SELECTED_KEY, SelectedMatchId);
+
+        getSupportFragmentManager().putFragment(outState, PAGER_FRAGMENT_KEY, pagerFragment);
+
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState)
     {
-        Log.v(save_tag,"will retrive");
-        Log.v(save_tag,"fragment: "+String.valueOf(savedInstanceState.getInt("Pager_Current")));
-        Log.v(save_tag,"selected id: "+savedInstanceState.getInt("Selected_match"));
-        current_fragment = savedInstanceState.getInt("Pager_Current");
-        selected_match_id = savedInstanceState.getInt("Selected_match");
-        my_main = (PagerFragment) getSupportFragmentManager().getFragment(savedInstanceState,"my_main");
+        Log.v(LOG_TAG,"will retrive");
+        Log.v(LOG_TAG,"fragment: " + String.valueOf(savedInstanceState.getInt(CURRENT_PAGE_KEY)));
+        Log.v(LOG_TAG,"selected id: " + savedInstanceState.getInt(CURRENT_SELECTED_KEY));
+
+        CurrentFrameIndex = savedInstanceState.getInt(CURRENT_PAGE_KEY);
+        SelectedMatchId = savedInstanceState.getInt(CURRENT_SELECTED_KEY);
+
+        pagerFragment = (PagerFragment) getSupportFragmentManager().getFragment(savedInstanceState, PAGER_FRAGMENT_KEY);
+
         super.onRestoreInstanceState(savedInstanceState);
     }
 }

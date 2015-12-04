@@ -38,6 +38,7 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
     {
         fragmentdate[0] = date;
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              final Bundle savedInstanceState) {
@@ -47,7 +48,7 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
         mAdapter = new scoresAdapter(getActivity(),null,0);
         score_list.setAdapter(mAdapter);
         getLoaderManager().initLoader(SCORES_LOADER,null,this);
-        mAdapter.detail_match_id = MainActivity.selected_match_id;
+        mAdapter.detail_match_id = MainActivity.SelectedMatchId;
         score_list.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
@@ -55,7 +56,7 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
             {
                 ViewHolder selected = (ViewHolder) view.getTag();
                 mAdapter.detail_match_id = selected.match_id;
-                MainActivity.selected_match_id = (int) selected.match_id;
+                MainActivity.SelectedMatchId = (int) selected.match_id;
                 mAdapter.notifyDataSetChanged();
             }
         });
@@ -80,7 +81,7 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
             Log.v(FetchScoreTask.LOG_TAG,cursor.getString(1));
             cursor.moveToNext();
         }
-        */
+
 
         int i = 0;
         cursor.moveToFirst();
@@ -88,7 +89,7 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
         {
             i++;
             cursor.moveToNext();
-        }
+        }*/
         //Log.v(FetchScoreTask.LOG_TAG,"Loader query: " + String.valueOf(i));
         mAdapter.swapCursor(cursor);
         //mAdapter.notifyDataSetChanged();
