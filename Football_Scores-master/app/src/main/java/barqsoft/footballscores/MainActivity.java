@@ -1,5 +1,8 @@
 package barqsoft.footballscores;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +10,10 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import java.util.Calendar;
+
+import barqsoft.footballscores.service.SoccerService;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -35,12 +42,46 @@ public class MainActivity extends AppCompatActivity
         Log.d(LOG_TAG, "Reached MainActivity onCreate");
 
         if (savedInstanceState == null) {
+
+            startSyncAlarm();
+
             pagerFragment = new PagerFragment();
 
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, pagerFragment)
                     .commit();
         }
+    }
+
+    private void startSyncAlarm() {
+
+        Intent alarmIntent = new Intent(this, SoccerService.AlarmReceiver.class);
+
+        // we check if the alarm is running
+        if (PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_NO_CREATE) == null) {
+
+            Log.d(LOG_TAG, "Starting alarm to trigger SoccerService each day at 1:00 a.m.");
+
+            // Set the alarm to start approximately at 1:00 a.m.
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(System.currentTimeMillis());
+            calendar.set(Calendar.HOUR_OF_DAY, 1);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.add(Calendar.DATE, 1);
+
+            // Wrap in a pending intent which fires each day approximately at 1:00 a.m.
+            PendingIntent pi = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            am.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pi);
+
+            // Start the service now.
+            loadMatchesNow();
+        }
+    }
+
+    private void loadMatchesNow() {
+        Intent intent = new Intent(this, SoccerService.class);
+        startService(intent);
     }
 
 
