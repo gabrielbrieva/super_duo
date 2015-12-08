@@ -29,6 +29,7 @@ import barqsoft.footballscores.Utilies;
 public class SoccerService extends IntentService
 {
     public static final String LOG_TAG = "SoccerService";
+    public static final String ACTION_DATA_UPDATED = "barqsoft.footballscores.app.ACTION_DATA_UPDATED";
 
     private final String SEASON_LINK = "http://api.football-data.org/alpha/soccerseasons/";
     private final String MATCH_LINK = "http://api.football-data.org/alpha/fixtures/";
@@ -65,6 +66,10 @@ public class SoccerService extends IntentService
                 getData(league, "n3"); // today and 2 next days.
                 getData(league, "p2"); // yesterday and one day before yesterday.
             }
+
+            // Setting the package ensures that only components in our app will receive the broadcast
+            Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED).setPackage(getPackageName());
+            sendBroadcast(dataUpdatedIntent);
         }
 
         // reschedule today sync (sync when each game ends)...

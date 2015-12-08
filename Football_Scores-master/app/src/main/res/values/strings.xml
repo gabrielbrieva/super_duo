@@ -36,5 +36,5 @@
 
         During the off season, fake data will be added to the app.
     </string>
-    <string name="widget_text">This is a widget probably.</string>
+    <string name="title_widget_today">Soccer Widget Title</string>
 </resources>
