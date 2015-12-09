@@ -6,14 +6,14 @@
     <dimen name="list_horizonal_matgin">2dp</dimen>
     <dimen name="share_button_margin">150dp</dimen>
 
-    <dimen name="TeamNames">17sp</dimen>
+    <dimen name="TeamNames">15sp</dimen>
     <dimen name="Score">30sp</dimen>
     <dimen name="League">15sp</dimen>
 
-
     <!-- Today Widget -->
-    <dimen name="widget_today_default_width">250dp</dimen>
+    <dimen name="widget_today_default_width">180dp</dimen>
     <dimen name="widget_today_default_height">40dp</dimen>
     <dimen name="widget_today_min_resize_width">@dimen/widget_today_default_width</dimen>
     <dimen name="widget_today_min_resize_height">@dimen/widget_today_default_height</dimen>
+
 </resources>

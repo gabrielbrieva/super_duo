@@ -2,6 +2,7 @@ package barqsoft.footballscores;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -113,9 +114,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onSaveInstanceState(Bundle outState)
     {
-        Log.v(LOG_TAG,"will save");
+        /*Log.v(LOG_TAG,"will save");
         Log.v(LOG_TAG,"fragment: " + String.valueOf(pagerFragment.mPagerHandler.getCurrentItem()));
-        Log.v(LOG_TAG,"selected id: " + SelectedMatchId);
+        Log.v(LOG_TAG,"selected id: " + SelectedMatchId);*/
 
         outState.putInt(CURRENT_PAGE_KEY, pagerFragment.mPagerHandler.getCurrentItem());
         outState.putInt(CURRENT_SELECTED_KEY, SelectedMatchId);
@@ -128,9 +129,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState)
     {
-        Log.v(LOG_TAG,"will retrive");
+        /*Log.v(LOG_TAG,"will retrive");
         Log.v(LOG_TAG,"fragment: " + String.valueOf(savedInstanceState.getInt(CURRENT_PAGE_KEY)));
-        Log.v(LOG_TAG,"selected id: " + savedInstanceState.getInt(CURRENT_SELECTED_KEY));
+        Log.v(LOG_TAG,"selected id: " + savedInstanceState.getInt(CURRENT_SELECTED_KEY));*/
 
         CurrentFrameIndex = savedInstanceState.getInt(CURRENT_PAGE_KEY);
         SelectedMatchId = savedInstanceState.getInt(CURRENT_SELECTED_KEY);

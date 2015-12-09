@@ -3,12 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/primary">
+    android:background="@color/widgetBacground">
+
+    <ListView
+        android:id="@+id/matches_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:listitem="@layout/match_item"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="1dp"
+        android:clickable="true"
+        android:drawSelectorOnTop="true" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="All Today Matches"
-        style="@style/Base.TextAppearance.AppCompat.Medium.Inverse" />
+        android:id="@+id/widget_empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="@string/widget_empty"/>
 
 </FrameLayout>

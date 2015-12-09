@@ -38,7 +38,7 @@ public class PagerFragment extends Fragment
         for (int i = 0;i < NUM_PAGES;i++)
         {
             Date fragmentdate = new Date(System.currentTimeMillis()+((i-2)*86400000));
-            SimpleDateFormat mformat = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat mformat = new SimpleDateFormat(Utilies.DATE_FORMAT);
             viewFragments[i] = new MainScreenFragment();
             viewFragments[i].setFragmentDate(mformat.format(fragmentdate));
         }
@@ -68,12 +68,14 @@ public class PagerFragment extends Fragment
         {
             super(fm);
         }
+
         // Returns the page title for the top indicator
         @Override
         public CharSequence getPageTitle(int position)
         {
             return getDayName(getActivity(),System.currentTimeMillis()+((position-2)*86400000));
         }
+
         public String getDayName(Context context, long dateInMillis) {
             // If the date is today, return the localized version of "Today" instead of the actual
             // day name.

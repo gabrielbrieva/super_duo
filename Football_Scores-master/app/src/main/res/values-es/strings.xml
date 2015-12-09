@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bt_share_desc">Compartir partido de %1$s versus %2$s </string>
+    <string name="matchday">Día de partido: </string>
+    <string name="pleague_stage_final">Final</string>
+    <string name="pleague_stage_group_stage">Fase de grupos, día: 6</string>
+    <string name="pleague_stage_knockout">Primera ronda por knockout</string>
+    <string name="pleague_stage_quarterfinal">Cuartos de Final</string>
+    <string name="pleague_stage_semifinal">Semi Final</string>
+    <string name="share_text">Compartir</string>
+    <string name="title_activity_about">Sobre Football Soccer</string>
+    <string name="title_widget_today">Football Soccer Hoy</string>
+    <string name="today">Hoy</string>
+    <string name="tomorrow">Mañana</string>
+    <string name="unknown_league">Liga desconocida, porfavor reportar</string>
+    <string name="widget_empty">No hay partidos</string>
+    <string name="widget_loading">Cargando...</string>
+    <string name="yesterday">Ayer</string>
+    <string name="about">Sobre la App</string>
+    <string name="about_text">
+        Esta aplicación obtiene el resultado de los partidos partidos de la Premier League y Uefa Champions League.
+        Todos los detalles de los encuentros so obtenidos desde la API football-data.org.
+        Todos los logos de los equipos se descargaron con la debida autorización de los dueños.
+        La versión original de esta aplicación fie creada por Yahia Khalid Ibn El Walid Ahmed y una versión modificada fue entregada a los estudiantes de Udacity Android Nanodegree.
+        Para reportar cualquier bug o sugerencias, no dude en enviar un correo a y.k.ibnelwalid@gmail.com.
+    </string>
+</resources>

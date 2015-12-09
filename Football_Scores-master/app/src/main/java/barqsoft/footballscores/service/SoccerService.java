@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -169,15 +168,15 @@ public class SoccerService extends IntentService
 
             matchValues = new ContentValues();
 
-            matchValues.put(DatabaseContract.scores_table.MATCH_ID, match_id);
-            matchValues.put(DatabaseContract.scores_table.DATE_COL, mDate);
-            matchValues.put(DatabaseContract.scores_table.TIME_COL, mTime);
-            matchValues.put(DatabaseContract.scores_table.HOME_COL, Home);
-            matchValues.put(DatabaseContract.scores_table.AWAY_COL, Away);
-            matchValues.put(DatabaseContract.scores_table.HOME_GOALS_COL, Home_goals);
-            matchValues.put(DatabaseContract.scores_table.AWAY_GOALS_COL, Away_goals);
-            matchValues.put(DatabaseContract.scores_table.LEAGUE_COL, League);
-            matchValues.put(DatabaseContract.scores_table.MATCH_DAY, match_day);
+            matchValues.put(DatabaseContract.SoccerEntry.MATCH_ID, match_id);
+            matchValues.put(DatabaseContract.SoccerEntry.DATE_COL, mDate);
+            matchValues.put(DatabaseContract.SoccerEntry.TIME_COL, mTime);
+            matchValues.put(DatabaseContract.SoccerEntry.HOME_COL, Home);
+            matchValues.put(DatabaseContract.SoccerEntry.AWAY_COL, Away);
+            matchValues.put(DatabaseContract.SoccerEntry.HOME_GOALS_COL, Home_goals);
+            matchValues.put(DatabaseContract.SoccerEntry.AWAY_GOALS_COL, Away_goals);
+            matchValues.put(DatabaseContract.SoccerEntry.LEAGUE_COL, League);
+            matchValues.put(DatabaseContract.SoccerEntry.MATCH_DAY, match_day);
 
             //log spam
             Log.v(LOG_TAG, match_id);
@@ -200,17 +199,17 @@ public class SoccerService extends IntentService
 
         Date currentDate = new Date(System.currentTimeMillis());
 
-        SimpleDateFormat mformat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat mformat = new SimpleDateFormat(Utilies.DATE_FORMAT);
         mformat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        SimpleDateFormat tFormat = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat tFormat = new SimpleDateFormat(Utilies.TIME_FORMAT);
         tFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         String todayDate = mformat.format(currentDate);
         String currentTime = tFormat.format(currentDate);
 
-        Cursor c = getApplicationContext().getContentResolver().query(DatabaseContract.scores_table.buildScoreWithDateAndTime(),
-                new String[]{ DatabaseContract.scores_table.DATE_COL, DatabaseContract.scores_table.TIME_COL },
-                null, new String[]{ todayDate, currentTime }, DatabaseContract.scores_table.DATE_COL + " ASC");
+        Cursor c = getApplicationContext().getContentResolver().query(DatabaseContract.SoccerEntry.buildScoreWithDateAndTime(),
+                new String[]{ DatabaseContract.SoccerEntry.DATE_COL, DatabaseContract.SoccerEntry.TIME_COL },
+                null, new String[]{ todayDate, currentTime }, DatabaseContract.SoccerEntry.DATE_COL + " ASC");
 
         if (c != null) {
             if (c.moveToNext()) {
@@ -252,6 +251,18 @@ public class SoccerService extends IntentService
         public void onReceive(Context context, Intent intent) {
             Intent sendIntent = new Intent(context, SoccerService.class);
             context.startService(sendIntent);
+        }
+    }
+
+    public static class DateChangedReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(Intent.ACTION_DATE_CHANGED) ||
+                    intent.getAction().equals(Intent.ACTION_TIME_CHANGED) ||
+                    intent.getAction().equals(Intent.ACTION_TIMEZONE_CHANGED)) {
+                Intent sendIntent = new Intent(context, SoccerService.class);
+                context.startService(sendIntent);
+            }
         }
     }
 }

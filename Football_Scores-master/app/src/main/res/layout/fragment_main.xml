@@ -4,11 +4,19 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity$PlaceholderFragment">
 
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id = "@+id/scores_list"
-            android:divider="@android:color/transparent"
-            android:drawSelectorOnTop="true" />
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id = "@+id/scores_list"
+        android:divider="@android:color/transparent"
+        android:drawSelectorOnTop="true" />
+
+    <TextView
+        android:id="@+id/no_matches"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="@string/widget_empty"
+        android:gravity="center" />
 
 </FrameLayout>
