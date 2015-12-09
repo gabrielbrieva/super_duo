@@ -101,14 +101,6 @@ public class TodayWidgetRemoteViewService extends RemoteViewsService {
                 views.setImageViewResource(R.id.home_crest, Utilies.getTeamCrestByTeamName(c.getString(INDEX_HOME)));
                 views.setImageViewResource(R.id.away_crest, Utilies.getTeamCrestByTeamName(c.getString(INDEX_AWAY)));
 
-                // TODO: add click pending intent
-                /*Intent clickIntentTemplate = new Intent(getApplicationContext(), MainActivity.class);
-                PendingIntent clickPendingIntentTemplate = TaskStackBuilder.create(getApplicationContext())
-                        .addNextIntentWithParentStack(clickIntentTemplate)
-                        .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-                views.setPendingIntentTemplate(R.id.matches_list, clickPendingIntentTemplate);
-                views.setEmptyView(R.id.matches_list, R.id.widget_empty);*/
-
                 Intent fillInIntent = new Intent();
                 views.setOnClickFillInIntent(R.id.match_item, fillInIntent);
 
