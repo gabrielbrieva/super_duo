@@ -6,8 +6,8 @@
 
     <color name="mainBackground">#e0e0e0</color>
 
-    <color name="widgetBacground">#64000000</color>
-    <color name="widgetMatchBacground">#dbf9f9f9</color>
+    <color name="widgetBackground">#64000000</color>
+    <color name="widgetMatchBackground">#dbf9f9f9</color>
 
     <color name="defaultTextColor">#464646</color>
 </resources>
